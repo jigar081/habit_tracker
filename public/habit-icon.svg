@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#6C63FF"/>
+      <stop offset="100%" stop-color="#9C4FE4"/>
+    </linearGradient>
+    <linearGradient id="f1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFD700"/>
+      <stop offset="50%"  stop-color="#FF7A00"/>
+      <stop offset="100%" stop-color="#FF1F1F"/>
+    </linearGradient>
+    <linearGradient id="f2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFFDE7"/>
+      <stop offset="100%" stop-color="#FFD700"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="13" fill="url(#bg)"/>
+
+  <!--
+    Flame: drawn as a single teardrop-ish shape.
+    Start at bottom-center (32,54), sweep left side up to tip (32,13), sweep right side back down.
+    No separate sub-paths = no artifacts.
+  -->
+  <path fill="url(#f1)" d="
+    M 32 54
+    C 24 54  18 46  19 37
+    C 20 28  26 24  26 18
+    C 28 22  28 28  26 33
+    C 28 25  32 18  32 13
+    C 32 18  36 25  34 33
+    C 32 28  34 22  36 18
+    C 36 24  42 28  43 37
+    C 44 46  40 54  32 54
+    Z
+  "/>
+
+  <!-- Inner core: small teardrop in center -->
+  <path fill="url(#f2)" d="
+    M 32 50
+    C 29 50  27 46  28 41
+    C 29 38  31 36  32 33
+    C 33 36  35 38  36 41
+    C 37 46  35 50  32 50
+    Z
+  "/>
+</svg>
