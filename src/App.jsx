@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
+import { UserProvider, useUser } from './context/UserContext';
 import { HabitProvider, useHabits } from './context/HabitContext';
+import LoginScreen from './components/LoginScreen';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import Dashboard from './components/Dashboard';
@@ -17,17 +19,18 @@ const PAGE_TITLES = {
 };
 
 function AppInner() {
+  const { activeUser, logoutUser } = useUser();
   const { activeView, setActiveView, theme, toggleTheme, habits } = useHabits();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editHabitId, setEditHabitId] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
   const openAddHabit = useCallback(() => { setEditHabitId(null); setModalOpen(true); }, []);
   const openEditHabit = useCallback((id) => { setEditHabitId(id); setModalOpen(true); }, []);
   const closeModal = useCallback(() => { setModalOpen(false); setEditHabitId(null); }, []);
 
-  /* clicking a habit card from My Habits → jumps to Calendar with that habit tab pre-selected */
   const handleViewHabit = useCallback((_id) => {
     setActiveView('calendar');
   }, [setActiveView]);
@@ -81,6 +84,50 @@ function AppInner() {
             >
               + Add Habit
             </button>
+
+            {/* User profile button */}
+            <div className="user-menu-wrapper">
+              <button
+                className="user-avatar-btn"
+                onClick={() => setShowUserMenu(v => !v)}
+                id="user-profile-btn"
+                title={activeUser?.name}
+              >
+                {activeUser?.avatar || '👤'}
+              </button>
+
+              {showUserMenu && (
+                <>
+                  <div className="user-menu-overlay" onClick={() => setShowUserMenu(false)} />
+                  <div className="user-menu-dropdown" id="user-menu-dropdown">
+                    <div className="user-menu-header">
+                      <span className="user-menu-avatar">{activeUser?.avatar}</span>
+                      <div>
+                        <div className="user-menu-name">{activeUser?.name}</div>
+                        <div className="user-menu-since">
+                          Since {new Date(activeUser?.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="user-menu-divider" />
+                    <button
+                      className="user-menu-item"
+                      onClick={() => { setShowUserMenu(false); logoutUser(); }}
+                      id="switch-profile-btn"
+                    >
+                      🔄 Switch Profile
+                    </button>
+                    <button
+                      className="user-menu-item logout"
+                      onClick={() => { setShowUserMenu(false); logoutUser(); }}
+                      id="logout-btn"
+                    >
+                      🚪 Log Out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 
@@ -122,10 +169,28 @@ function AppInner() {
   );
 }
 
-export default function App() {
+function AuthenticatedApp() {
   return (
     <HabitProvider>
       <AppInner />
     </HabitProvider>
   );
+}
+
+export default function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
+  );
+}
+
+function AppContent() {
+  const { activeUser } = useUser();
+
+  if (!activeUser) {
+    return <LoginScreen />;
+  }
+
+  return <AuthenticatedApp />;
 }
